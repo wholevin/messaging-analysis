@@ -1,10 +1,11 @@
 import argparse
+import fnmatch
 import json
+import os
 import pymqi
+import sys
 from time import time, sleep
 import CMQC, CMQCFC, CMQXC
-import os
-from json import JSONEncoder
 
 ALL_PREFIX = "*"
 DEFAULT_DIR = "results"
@@ -34,7 +35,8 @@ def parse_command_line_arguments():
 	return args
 
 def default_dir():
-	os.mkdir(DEFAULT_DIR)
+	if(not os.path.exists(DEFAULT_DIR)):
+		os.mkdir(DEFAULT_DIR)
 	return DEFAULT_DIR
 
 def capture_statistics(connection_handler):
@@ -202,7 +204,35 @@ if __name__ == '__main__':
 	output_dir = args.output	
 	if not output_dir:
 		output_dir = default_dir()
+	output_dir =  os.path.abspath(output_dir)
 
+	output_files = os.listdir(output_dir)
+	if len(output_files) > 0:
+		choice = ""
+		while(choice not in ['y','n']):
+			
+			choice = raw_input("%s contains output files already.  Clear directory (NOTE: This will clear all files in the directory; BE AWARE)? (y/n)" % output_dir).lower()
+			if choice == 'y':
+				non_result_files = []				
+				for output_file in output_files:
+					if not fnmatch.fnmatch(output_file, '*cap_*.json'):
+						non_result_files.append(output_file)
+
+				if(len(non_result_files)):
+					print "Non result file(s) exist in %s: [%s]. Aborting.  Please choose a different output directory." % (output_dir,str.join(", ", non_result_files))
+					sys.exit()
+				
+				for root, dirs, files in os.walk(output_dir):
+				    for f in files:
+				    	os.unlink(os.path.join(root, f))
+
+			elif choice == 'n':
+				print "Aborting.  Please choose a different output directory."
+				sys.exit()
+			else:
+				print "Invalid choice: %s" % choice
+		
+				
 	if args.runs:
 		i = 1
 		times = 0

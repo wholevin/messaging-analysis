@@ -44,18 +44,17 @@ class GraphWriter:
 
 	def create_graphs(self, stats, output_dir, test=False):
 		
-		self.create_msg_in_rate(stats, output_dir)
-		self.create_msg_out_rate(stats, output_dir)
-		self.create_msg_size_histogram(stats, output_dir)
-		self.create_msg_depth_histogram(stats, output_dir)
+		self.create_msg_in_rate(stats, output_dir, test)
+		self.create_msg_out_rate(stats, output_dir, test)
+		self.create_msg_size_histogram(stats, output_dir, test)
+		self.create_msg_depth_histogram(stats, output_dir, test)
 
-		if(test):
-			plt.show()
+		if(test): plt.show()
 
 		return output_dir
 		
 	
-	def create_msg_in_rate(self, stats, output_dir):
+	def create_msg_in_rate(self, stats, output_dir, test=False):
 		
 		bar_width = (stats["intervalStats"][0]["startTime"] - stats["intervalStats"][0]["endTime"]) / 10
 		x,y = [], []
@@ -71,9 +70,12 @@ class GraphWriter:
 		plt.grid(True)
 		plt.draw()
 		plt.savefig(os.path.join(output_dir,"msg_in_rate_graph.jpeg"))
+		
+		if(test): 
+			plt.show()
+		plt.close()
 
-
-	def create_msg_out_rate(self, stats, output_dir):
+	def create_msg_out_rate(self, stats, output_dir, test=False):
 		
 		bar_width = (stats["intervalStats"][0]["startTime"] - stats["intervalStats"][0]["endTime"]) / 10
 		x,y = [], []
@@ -90,7 +92,11 @@ class GraphWriter:
 		plt.draw()
 		plt.savefig(os.path.join(output_dir,"msg_out_rate_graph.jpeg"))
 
-	def create_msg_size_histogram(self, stats, output_dir):
+		if(test): 
+			plt.show()
+		plt.close()
+
+	def create_msg_size_histogram(self, stats, output_dir, test=False):
 		
 		plt.figure()
 		plt.xlabel('Msg Size')
@@ -101,7 +107,11 @@ class GraphWriter:
 		plt.draw()
 		plt.savefig(os.path.join(output_dir,"msg_size_hist_graph.jpeg"))
 
-	def create_msg_depth_histogram(self, stats, output_dir):
+		if(test): 
+			plt.show()
+		plt.close()
+
+	def create_msg_depth_histogram(self, stats, output_dir, test=False):
 
 		plt.figure()
 		plt.xlabel('Msg Depth')
@@ -111,3 +121,7 @@ class GraphWriter:
 		plt.grid(True)
 		plt.draw()
 		plt.savefig(os.path.join(output_dir,"msg_depth_hist_graph.jpeg"))
+
+		if(test): 
+			plt.show()
+		plt.close()

@@ -10,6 +10,10 @@ class Digester:
 	def read_snapshot_files(self, snapshot_dir):
 		all_snapshots = []
 		snapshots = os.listdir(snapshot_dir)
+
+		if(len(snapshots) < 2):
+			raise ValueError("Not enough snapshots to extrapolate results found in %s" % snapshot_dir)
+
 		for snapshot in snapshots:
 			with open(os.path.join(snapshot_dir, snapshot), 'r') as f:
 				file_body = f.read()

@@ -25,6 +25,14 @@ class TestDigester(unittest.TestCase):
 
 		if CLEANUP: shutil.rmtree(tmp_dir)
 
+	def test_json_reader_no_dir(self):
+		self.assertRaises(OSError, self.digester.read_snapshot_files, "/not/a/directory/lol")
+
+	def test_json_reader_no_files(self):
+		tmp_dir = tempfile.mkdtemp()
+		self.assertRaises(ValueError, self.digester.read_snapshot_files, tmp_dir)
+		shutil.rmtree(tmp_dir)
+
 	def test_generate_aggregate_1_snapshot(self):
 		self.assertRaises(ValueError, self.digester.generate_aggregate_stats, [ { "time":1000, "captures":[{ "queueName": "Q.1", "msgIn":30, "msgOut":27, "depth":3, "msgs":[{"size":20, "persistent":True},{"size":18,"persistent":True}]}, { "queueName": "Q.2", "msgIn":30, "msgOut":27, "depth":3, "msgs":[{"size":20, "persistent":True},{"size":18,"persistent":True},{"size":40, "persistent":True},{"size":58,"persistent":True}]}]  } ])
 

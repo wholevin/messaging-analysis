@@ -10,6 +10,9 @@ STATS = {'overallStats': {'maxMsgSize': 3560, 'allDepths':[8, 22, 35], 'avgMsgSi
 
 CLEANUP = True
 
+
+#NOTE: Testing that an image is written correctly or a pdf is generated correctly is....difficult.  
+#Pass in test=True to the graph generation methods to pop them up during the test.
 class TestGraphWriter(unittest.TestCase):
 
 	def setUp(self):

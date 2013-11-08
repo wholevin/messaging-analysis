@@ -53,9 +53,9 @@ class TestConnectionHandler(unittest.TestCase):
 		self.connection_handler.put_message_in_queue(QUEUE_NAME, TEST_MESSAGE2)
 		self.connection_handler.put_message_in_queue(QUEUE_NAME, TEST_MESSAGE3)
 		messages = self.connection_handler.browse_messages_in_queue(QUEUE_NAME)
-		self.assertEqual(messages[0].body, TEST_MESSAGE)
-		self.assertEqual(messages[1].body, TEST_MESSAGE2)
-		self.assertEqual(messages[2].body, TEST_MESSAGE3)
+		self.assertEqual(messages[0].size, len(TEST_MESSAGE))
+		self.assertEqual(messages[1].size, len(TEST_MESSAGE2))
+		self.assertEqual(messages[2].size, len(TEST_MESSAGE3))
 		
 	def test_get_queue_statistics(self):
 		self.connection_handler.put_message_in_queue(QUEUE_NAME, TEST_MESSAGE)
