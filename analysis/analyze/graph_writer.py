@@ -102,7 +102,7 @@ class GraphWriter:
 		plt.xlabel('Msg Size')
 		plt.ylabel('Occurence')
 		plt.title('Msg Size Histogram')
-		plt.hist(stats["overallStats"]["allMsgSizes"])
+		plt.hist(stats["overallStats"]["allMsgSizes"], bins=20)
 		plt.grid(True)
 		plt.draw()
 		plt.savefig(os.path.join(output_dir,"msg_size_hist_graph.jpeg"))

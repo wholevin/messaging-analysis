@@ -36,7 +36,7 @@ class Digester:
 				totalMsgOut += captures[j]["msgOut"]
 				totalMsgDepth += captures[j]["depth"]
 				msg_sizes.append([ msg["size"] for msg in captures[j]["msgs"] ])
-			
+	
 			msg_sizes = [item for sublist in msg_sizes for item in sublist]
 			snapshots[i]["aggregateStats"] = { "totalMsgIn":totalMsgIn, "totalMsgOut":totalMsgOut, "totalMsgDepth":totalMsgDepth, "msgSizes":msg_sizes, "avgMessageSize":numpy.average(msg_sizes) }
 
@@ -52,8 +52,8 @@ class Digester:
 			end_time = snapshots[j]["time"]
 			interval = end_time - start_time
 
-			interval_stat["msgInRate"] = float(snapshots[j]["aggregateStats"]["totalMsgIn"] - snapshots[j-1]["aggregateStats"]["totalMsgIn"]) / float(interval / 1000)
-			interval_stat["msgOutRate"] = float(snapshots[j]["aggregateStats"]["totalMsgOut"] - snapshots[j-1]["aggregateStats"]["totalMsgOut"]) / float(interval / 1000)
+			interval_stat["msgInRate"] = float(snapshots[j]["aggregateStats"]["totalMsgIn"]) / float(interval)
+			interval_stat["msgOutRate"] = float(snapshots[j]["aggregateStats"]["totalMsgOut"]) / float(interval)
 			interval_stat["startTime"] = start_time
 			interval_stat["endTime"] = end_time
 
