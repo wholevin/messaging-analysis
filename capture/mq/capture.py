@@ -9,6 +9,7 @@ import CMQC, CMQCFC, CMQXC
 
 ALL_PREFIX = "*"
 DEFAULT_DIR = "results"
+QUEUE_DEPTH_KEY, MSG_IN_KEY, MSG_OUT_KEY = "queueDepth", "msgIn", "msgOut"
 
 def parse_command_line_arguments():
 	parser = argparse.ArgumentParser(description="Captures the message statistics for the provided queue manager.")
@@ -141,13 +142,13 @@ class ConnectionHandler:
 		stats = {}
 		try:
 			queue = pymqi.Queue(self.connection, queue_name)
-			stats["queueDepth"] = queue.inquire(CMQC.MQIA_CURRENT_Q_DEPTH)
+			stats[QUEUE_DEPTH_KEY] = queue.inquire(CMQC.MQIA_CURRENT_Q_DEPTH)
 			
 			#To get msg enq and deq each time, the stats must be reset using the following call
 			response = self.connection.MQCMD_RESET_Q_STATS({CMQC.MQCA_Q_NAME: queue_name})
 
-			stats["msgEnq"] = response[0][CMQC.MQIA_MSG_ENQ_COUNT]
-			stats["msgDeq"] = response[0][CMQC.MQIA_MSG_DEQ_COUNT]
+			stats[MSG_IN_KEY] = response[0][CMQC.MQIA_MSG_ENQ_COUNT]
+			stats[MSG_OUT_KEY] = response[0][CMQC.MQIA_MSG_DEQ_COUNT]
 			
 
 		except pymqi.MQMIError, e:
@@ -197,9 +198,9 @@ class QueueStatistics(JSONSerializable):
 
 	def __init__(self, queue_name, messages, statistics):
 		self.queueName = queue_name.split()[0]
-		self.depth = statistics["queueDepth"]
-		self.msgIn = statistics["msgEnq"]
-		self.msgOut = statistics["msgDeq"]
+		self.depth = statistics[QUEUE_DEPTH_KEY]
+		self.msgIn = statistics[MSG_IN_KEY]
+		self.msgOut = statistics[MSG_OUT_KEY]
 		
 		self.msgs = messages
 

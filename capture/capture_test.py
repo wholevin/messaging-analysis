@@ -60,7 +60,10 @@ class TestConnectionHandler(unittest.TestCase):
 	def test_get_queue_statistics(self):
 		self.connection_handler.put_message_in_queue(QUEUE_NAME, TEST_MESSAGE)
 		queue_statistics = self.connection_handler.get_queue_statistics(QUEUE_NAME)
-		self.assertEqual(1, queue_statistics[CMQC.MQIA_CURRENT_Q_DEPTH])
+
+		self.assertEqual(1, queue_statistics[capture.QUEUE_DEPTH_KEY])
+		self.assertEqual(1, queue_statistics[capture.MSG_IN_KEY])
+		self.assertEqual(0, queue_statistics[capture.MSG_OUT_KEY])
 
 	def test_put_and_get_message(self):
 		self.connection_handler.put_message_in_queue(QUEUE_NAME, TEST_MESSAGE)
