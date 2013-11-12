@@ -48,6 +48,7 @@ class GraphWriter:
 		self.create_msg_out_rate(stats, output_dir, test)
 		self.create_msg_size_histogram(stats, output_dir, test)
 		self.create_msg_depth_histogram(stats, output_dir, test)
+		self.create_conn_count_graph(stats, output_dir, test)
 
 		if(test): plt.show()
 
@@ -121,6 +122,29 @@ class GraphWriter:
 		plt.grid(True)
 		plt.draw()
 		plt.savefig(os.path.join(output_dir,"msg_depth_hist_graph.jpeg"))
+
+		if(test): 
+			plt.show()
+		plt.close()
+
+
+
+	def create_conn_count_graph(self, stats, output_dir, test=False):
+		
+		bar_width = (stats["intervalStats"][0]["startTime"] - stats["intervalStats"][0]["endTime"]) / 10
+		x,y = [], []
+		for i in range(0,len(stats["overallStats"]["connStats"])):
+			x.append(stats["overallStats"]["connStats"][i]["time"])
+			y.append(stats["overallStats"]["connStats"][i]["connectionCount"])
+			
+		plt.figure()
+		plt.bar(x,y,width=bar_width)
+		plt.xlabel('Start Time')
+		plt.ylabel('Connection Count')
+		plt.title('Connection Count Over Time')
+		plt.grid(True)
+		plt.draw()
+		plt.savefig(os.path.join(output_dir,"connection_count_graph.jpeg"))
 
 		if(test): 
 			plt.show()

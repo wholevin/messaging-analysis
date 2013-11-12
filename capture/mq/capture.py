@@ -9,7 +9,7 @@ import CMQC, CMQCFC, CMQXC
 
 ALL_PREFIX = "*"
 DEFAULT_DIR = "results"
-QUEUE_DEPTH_KEY, MSG_IN_KEY, MSG_OUT_KEY = "queueDepth", "msgIn", "msgOut"
+QUEUE_STATS_KEY, CONN_COUNT_KEY, QUEUE_DEPTH_KEY, MSG_IN_KEY, MSG_OUT_KEY = "queueStats", "connCount", "queueDepth", "msgIn", "msgOut"
 
 def parse_command_line_arguments():
 	parser = argparse.ArgumentParser(description="Captures the message statistics for the provided queue manager.")
@@ -52,11 +52,11 @@ def capture_statistics(connection_handler):
 		except pymqi.MQMIError, e:
 			print "Failed to read queue '%s'" % queue_name.split() 
 
-	return queue_statistics
+	return {QUEUE_STATS_KEY: queue_statistics, CONN_COUNT_KEY: connection_handler.get_connection_count()}
 	
-def output_to_file(output_dir, queue_statistics, i):
+def output_to_file(output_dir, statistics, i):
 	f = open(os.path.join(output_dir,"cap_%s.json" % i), "w")
-	f.write(Captures(queue_statistics).to_json())
+	f.write(Captures(statistics).to_json())
 	f.close()
 	
 #Class to handle the connection to the Websphere MQ broker
@@ -149,7 +149,7 @@ class ConnectionHandler:
 
 			stats[MSG_IN_KEY] = response[0][CMQC.MQIA_MSG_ENQ_COUNT]
 			stats[MSG_OUT_KEY] = response[0][CMQC.MQIA_MSG_DEQ_COUNT]
-			
+
 
 		except pymqi.MQMIError, e:
 			if e.comp == CMQC.MQCC_FAILED and e.reason== CMQC.MQRC_UNKNOWN_OBJECT_NAME:
@@ -167,6 +167,10 @@ class ConnectionHandler:
 		queue = pymqi.Queue(self.connection, queue_name)
 		queue.put(message)
 		queue.close()
+	
+	def get_connection_count(self):
+		return self.connection.MQCMD_INQUIRE_Q_MGR_STATUS()[0][CMQCFC.MQIACF_CONNECTION_COUNT]
+
 
 class JSONSerializable(object):
 
@@ -189,9 +193,10 @@ class Message(JSONSerializable):
 #Json parseable class holding the overall statistics
 class Captures(JSONSerializable):
 
-	def __init__(self, queue_statistics):
+	def __init__(self, statistics):
 		self.time = time()
-		self.captures = queue_statistics
+		self.connectionCount = statistics[CONN_COUNT_KEY]
+		self.captures = statistics[QUEUE_STATS_KEY]
 
 #Json parseable class holding the queue statistics
 class QueueStatistics(JSONSerializable):

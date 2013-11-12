@@ -38,13 +38,12 @@ class Digester:
 				msg_sizes.append([ msg["size"] for msg in captures[j]["msgs"] ])
 	
 			msg_sizes = [item for sublist in msg_sizes for item in sublist]
-			snapshots[i]["aggregateStats"] = { "totalMsgIn":totalMsgIn, "totalMsgOut":totalMsgOut, "totalMsgDepth":totalMsgDepth, "msgSizes":msg_sizes, "avgMessageSize":numpy.average(msg_sizes) }
+			snapshots[i]["aggregateStats"] = { "totalMsgIn":totalMsgIn, "totalMsgOut":totalMsgOut, "totalMsgDepth":totalMsgDepth, "msgSizes":msg_sizes, "avgMessageSize":numpy.average(msg_sizes)}
 
-		#print snapshots
 		return snapshots
 
 	def process_aggregate_stats(self, snapshots):
-		processed_stats = {"intervalStats":[], "overallStats":{} }
+		processed_stats = {"intervalStats":[], "overallStats":{"connStats":[]} }
 		snapshots = sorted(snapshots, key=lambda snapshot: snapshot["time"])
 		for j in range(1, len(snapshots)):
 			interval_stat = {}
@@ -62,6 +61,7 @@ class Digester:
 		all_msg_sizes = []
 		for j in range(0, len(snapshots)):
 			all_msg_sizes.append(snapshots[j]["aggregateStats"]["msgSizes"])
+			processed_stats["overallStats"]["connStats"].append({"time":snapshots[j]["time"], "connectionCount":snapshots[j]["connectionCount"]})
 
 		all_depths = [ snapshot["aggregateStats"]["totalMsgDepth"] for snapshot in snapshots ]
 		processed_stats["overallStats"]["allDepths"] = all_depths
@@ -88,6 +88,8 @@ class Digester:
 		processed_stats["overallStats"]["maxMsgSize"] = numpy.max(all_msg_sizes)
 		processed_stats["overallStats"]["minMsgSize"] = numpy.min(all_msg_sizes)
 		processed_stats["overallStats"]["stdDevMsgSize"] = numpy.std(all_msg_sizes)
+		
+		all_conn_counts = [ conn_stat["connectionCount"] for conn_stat in processed_stats["overallStats"]["connStats"] ]
+		processed_stats["overallStats"]["avgConnCount"] = numpy.average(all_conn_counts)
 
-		#print processed_stats
 		return processed_stats
