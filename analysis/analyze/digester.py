@@ -30,16 +30,19 @@ class Digester:
 			captures = snapshots[i]["captures"]
 			totalMsgIn, totalMsgOut, totalMsgDepth = 0,0,0
 			msg_sizes = []
+			persistent = []
 			for j in range(len(captures)):
 				
 				totalMsgIn += captures[j]["msgIn"]
 				totalMsgOut += captures[j]["msgOut"]
 				totalMsgDepth += captures[j]["depth"]
 				msg_sizes.append([ msg["size"] for msg in captures[j]["msgs"] ])
-	
-			msg_sizes = [item for sublist in msg_sizes for item in sublist]
-			snapshots[i]["aggregateStats"] = { "totalMsgIn":totalMsgIn, "totalMsgOut":totalMsgOut, "totalMsgDepth":totalMsgDepth, "msgSizes":msg_sizes, "avgMessageSize":numpy.average(msg_sizes)}
+				persistent.append([ msg["persistent"] for msg in captures[j]["msgs"] ])
 
+			msg_sizes = [item for sublist in msg_sizes for item in sublist]
+			snapshots[i]["aggregateStats"] = { "totalMsgIn":totalMsgIn, "totalMsgOut":totalMsgOut, "totalMsgDepth":totalMsgDepth, "msgSizes":msg_sizes, "avgMessageSize":numpy.average(msg_sizes), "persistent":persistent}
+
+		print snapshots
 		return snapshots
 
 	def process_aggregate_stats(self, snapshots):
@@ -59,8 +62,10 @@ class Digester:
 			processed_stats["intervalStats"].append(interval_stat)
 
 		all_msg_sizes = []
+		all_persistent = []
 		for j in range(0, len(snapshots)):
 			all_msg_sizes.append(snapshots[j]["aggregateStats"]["msgSizes"])
+			all_persistent.append(snapshots[j]["aggregateStats"]["persistent"])
 			processed_stats["overallStats"]["connStats"].append({"time":snapshots[j]["time"], "connectionCount":snapshots[j]["connectionCount"]})
 
 		all_depths = [ snapshot["aggregateStats"]["totalMsgDepth"] for snapshot in snapshots ]
@@ -89,6 +94,8 @@ class Digester:
 		processed_stats["overallStats"]["minMsgSize"] = numpy.min(all_msg_sizes)
 		processed_stats["overallStats"]["stdDevMsgSize"] = numpy.std(all_msg_sizes)
 		
+		processed_stats["overallStats"]["allPersistent"] = [item for sublist in all_persistent for item in sublist]
+
 		all_conn_counts = [ conn_stat["connectionCount"] for conn_stat in processed_stats["overallStats"]["connStats"] ]
 		processed_stats["overallStats"]["avgConnCount"] = numpy.average(all_conn_counts)
 

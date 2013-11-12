@@ -50,7 +50,7 @@ class GraphWriter:
 		self.create_msg_size_histogram(stats, output_dir, test)
 		self.create_msg_depth_histogram(stats, output_dir, test)
 		self.create_conn_count_graph(stats, output_dir, test)
-
+		self.create_msg_persistence_hist(stats, output_dir, test)
 		if(test): plt.show()
 
 		return output_dir
@@ -146,6 +146,29 @@ class GraphWriter:
 		plt.grid(True)
 		plt.draw()
 		plt.savefig(os.path.join(output_dir,"connection_count_graph.jpeg"))
+
+		if(test): 
+			plt.show()
+		plt.close()
+
+	def create_msg_persistence_hist(self, stats, output_dir, test=False):
+
+		fig = plt.figure()
+		ax = fig.add_subplot(111)
+		
+		plt.xlabel('Persistent')
+		plt.ylabel('Occurence')
+		plt.title('Msg Persistence Histogram')
+		plt.hist(stats['overallStats']['allPersistent'], bins=2)
+		plt.grid(True)
+		plt.draw()
+		
+		labels = [item.get_text() for item in ax.get_xticklabels()]
+		labels[1] = 'No'
+		labels[len(labels)-2] = 'Yes'
+		ax.set_xticklabels(labels)
+
+		plt.savefig(os.path.join(output_dir,"msg_persistence_hist_graph.jpeg"))
 
 		if(test): 
 			plt.show()

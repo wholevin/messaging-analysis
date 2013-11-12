@@ -6,7 +6,7 @@ import os
 import numpy.random as nprnd
 import tempfile
 
-STATS = {'overallStats': {'maxMsgSize': 3560, 'allDepths':[8, 22, 35], 'avgMsgSize': 29.0, 'maxMsgInRate': 30.0, 'maxMsgOutRate': 30.0,  'minDepth': 8, 'maxDepth': 30, 'minMsgInRate': 30.0, 'minMsgOutRate': 30.0,  'allMsgSizes': [  30,   26,   18,   22,   20,   18,  400,   92,  200,  600,   18, 14,  100,  299, 3560,   20,   18,  400], 'avgDepth': 6.0, 'avgConnCount': 16.5, 'stdDevDepth': 12.0, 'avgMsgInRate': 9.0, 'avgMsgOutRate': 9.0, 'stdDevMsgSize': 802.81849377715321, 'stdDevMsgOutRate': 0.0, 'minMsgSize': 14, 'connStats': [{'connectionCount': 15, 'time': 1000}, {'connectionCount': 18, 'time': 2000}], 'stdDevMsgInRate': 0.0}, 'intervalStats': [{'msgInRate': 13.0, 'endTime': 3000, 'startTime': 2000, 'msgOutRate': 13.0}, {'msgInRate': 5.0, 'endTime': 4000, 'startTime': 3000, 'msgOutRate': 5.0}]}
+STATS = {'overallStats': {'allPersistent': [True,True,True,True,True,True,True,True,False,False,False,False,False], 'maxMsgSize': 3560, 'allDepths':[8, 22, 35], 'avgMsgSize': 29.0, 'maxMsgInRate': 30.0, 'maxMsgOutRate': 30.0,  'minDepth': 8, 'maxDepth': 30, 'minMsgInRate': 30.0, 'minMsgOutRate': 30.0,  'allMsgSizes': [  30,   26,   18,   22,   20,   18,  400,   92,  200,  600,   18, 14,  100,  299, 3560,   20,   18,  400], 'avgDepth': 6.0, 'avgConnCount': 16.5, 'stdDevDepth': 12.0, 'avgMsgInRate': 9.0, 'avgMsgOutRate': 9.0, 'stdDevMsgSize': 802.81849377715321, 'stdDevMsgOutRate': 0.0, 'minMsgSize': 14, 'connStats': [{'connectionCount': 15, 'time': 1000}, {'connectionCount': 18, 'time': 2000}], 'stdDevMsgInRate': 0.0}, 'intervalStats': [{'msgInRate': 13.0, 'endTime': 3000, 'startTime': 2000, 'msgOutRate': 13.0}, {'msgInRate': 5.0, 'endTime': 4000, 'startTime': 3000, 'msgOutRate': 5.0}]}
 
 CLEANUP = True
 
@@ -44,6 +44,13 @@ class TestGraphWriter(unittest.TestCase):
 
 		self.graph_writer.create_conn_count_graph(STATS, tmp_dir)
 		print "Connection count graph is "+ os.path.join(tmp_dir,"connection_count_graph.jpeg")
+		if CLEANUP: shutil.rmtree(tmp_dir)
+
+	def test_create_msg_persistence_hist(self):
+		tmp_dir = tempfile.mkdtemp()
+
+		self.graph_writer.create_msg_persistence_hist({'overallStats':{'allPersistent': [True,True,True,True,True,True,True,True,False,False,False,False,False]}}, tmp_dir)
+		print "Message persistence histogram graph is "+ os.path.join(tmp_dir,"msg_persistence_hist_graph.jpeg")
 		if CLEANUP: shutil.rmtree(tmp_dir)
 
 	def test_pdf_writer(self):
