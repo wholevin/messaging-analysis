@@ -17,6 +17,7 @@ class GraphWriter:
 		#bottomup = 0 sets coordinates as top left 0-based...but all the images are upside down
 		#Just start at arbitrary high Y value and subtract instead...
 		c = canvas.Canvas(pdf_loc)
+		c.setTitle("Messaging Analysis")
 
 		#Manually center the header because the documentation on how to do so is...special.
 		c.drawString(240, 800, "Messaging Statistics")
